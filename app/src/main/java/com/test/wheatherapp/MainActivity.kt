@@ -220,6 +220,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @android.annotation.SuppressLint("MissingPermission")
     private fun getCurrentLocation() {
         try {
             fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
