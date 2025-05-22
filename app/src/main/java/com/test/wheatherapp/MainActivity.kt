@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: WeatherViewModel by viewModels()
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var forecastAdapter: ForecastAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +60,17 @@ class MainActivity : AppCompatActivity() {
         val imgWeather = findViewById<ImageView>(R.id.img_weather)
         val recyclerForecast = findViewById<RecyclerView>(R.id.recycler_forecast)
         recyclerForecast.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val defaultForecasts = listOf(
+            ForecastItem("Lun", 23, R.drawable.ic_sunny),
+            ForecastItem("Mar", 22, R.drawable.ic_sunny),
+            ForecastItem("Mer", 20, R.drawable.ic_cloudy),
+            ForecastItem("Jeu", 19, R.drawable.ic_cloudy),
+            ForecastItem("Ven", 21, R.drawable.ic_sunny),
+            ForecastItem("Sam", 24, R.drawable.ic_sunny),
+            ForecastItem("Dim", 25, R.drawable.ic_sunny)
+        )
+        forecastAdapter = ForecastAdapter(defaultForecasts)
+        recyclerForecast.adapter = forecastAdapter
         val chevron = findViewById<ImageView>(R.id.ic_chevron_down)
         val locationIcon = findViewById<ImageView>(R.id.ic_location)
 
@@ -139,7 +151,14 @@ class MainActivity : AppCompatActivity() {
         })
         viewModel.forecast.observe(this, Observer { forecast ->
             if (forecast != null) {
-                recyclerForecast.adapter = ForecastAdapter(forecast.list)
+                // Ici il faut transformer forecast.list en List<ForecastItem>
+                val newItems = forecast.list.take(7).mapIndexed { index, day ->
+                    val dayName = java.text.SimpleDateFormat("EEE", java.util.Locale.FRENCH).format(java.util.Date(day.dt * 1000)).replaceFirstChar { it.uppercase() }
+                    val temp = day.temp.day.toInt()
+                    val iconRes = if ((day.weather.firstOrNull()?.icon ?: "01d").contains("d")) R.drawable.ic_sunny else R.drawable.ic_cloudy
+                    ForecastItem(dayName, temp, iconRes)
+                }
+                forecastAdapter.updateData(newItems)
             }
         })
         viewModel.fetchWeather()

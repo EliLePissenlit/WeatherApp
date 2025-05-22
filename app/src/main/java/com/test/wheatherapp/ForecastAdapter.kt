@@ -6,42 +6,38 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import java.text.SimpleDateFormat
-import java.util.*
 
-class ForecastAdapter(private val items: List<ForecastDay>) :
-    RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
+// Classe de données pour chaque prévision
+data class ForecastItem(
+    val day: String,
+    val temperature: Int,
+    val weatherIcon: Int
+)
+
+class ForecastAdapter(private var items: List<ForecastItem>) : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
+    class ForecastViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val textDay: TextView = view.findViewById(R.id.text_day)
+        val textTemp: TextView = view.findViewById(R.id.text_temp)
+        val imgWeather: ImageView = view.findViewById(R.id.img_weather)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_forecast_day, parent, false)
+            .inflate(R.layout.item_forecast, parent, false)
         return ForecastViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ForecastViewHolder, position: Int) {
-        val item = items[position]
-        val context = holder.itemView.context
-
-        // Date formatée
-        val date = Date(item.dt * 1000)
-        val sdf = SimpleDateFormat("dd MMM", Locale.FRENCH)
-        holder.textDate.text = sdf.format(date)
-
-        // Température
-        holder.textTemp.text = "${item.temp.day.toInt()}°C"
-
-        // Icône météo
-        val icon = item.weather.firstOrNull()?.icon ?: "01d"
-        val iconUrl = "https://openweathermap.org/img/wn/${icon}@2x.png"
-        Glide.with(context).load(iconUrl).into(holder.imgWeather)
+        val forecast = items[position]
+        holder.textDay.text = forecast.day
+        holder.textTemp.text = "${forecast.temperature}°"
+        holder.imgWeather.setImageResource(forecast.weatherIcon)
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount() = items.size
 
-    class ForecastViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textDate: TextView = view.findViewById(R.id.text_date)
-        val imgWeather: ImageView = view.findViewById(R.id.img_weather)
-        val textTemp: TextView = view.findViewById(R.id.text_temp)
+    fun updateData(newItems: List<ForecastItem>) {
+        items = newItems
+        notifyDataSetChanged()
     }
 } 
