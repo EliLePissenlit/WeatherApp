@@ -61,13 +61,13 @@ class MainActivity : AppCompatActivity() {
         val recyclerForecast = findViewById<RecyclerView>(R.id.recycler_forecast)
         recyclerForecast.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         val defaultForecasts = listOf(
-            ForecastItem("Lun", 23, R.drawable.ic_sunny),
-            ForecastItem("Mar", 22, R.drawable.ic_sunny),
-            ForecastItem("Mer", 20, R.drawable.ic_cloudy),
-            ForecastItem("Jeu", 19, R.drawable.ic_cloudy),
-            ForecastItem("Ven", 21, R.drawable.ic_sunny),
-            ForecastItem("Sam", 24, R.drawable.ic_sunny),
-            ForecastItem("Dim", 25, R.drawable.ic_sunny)
+            ForecastItem("Lun", 23, "https://openweathermap.org/img/wn/01d@2x.png"),
+            ForecastItem("Mar", 22, "https://openweathermap.org/img/wn/01d@2x.png"),
+            ForecastItem("Mer", 20, "https://openweathermap.org/img/wn/02d@2x.png"),
+            ForecastItem("Jeu", 19, "https://openweathermap.org/img/wn/02d@2x.png"),
+            ForecastItem("Ven", 21, "https://openweathermap.org/img/wn/01d@2x.png"),
+            ForecastItem("Sam", 24, "https://openweathermap.org/img/wn/01d@2x.png"),
+            ForecastItem("Dim", 25, "https://openweathermap.org/img/wn/01d@2x.png")
         )
         forecastAdapter = ForecastAdapter(defaultForecasts)
         recyclerForecast.adapter = forecastAdapter
@@ -151,12 +151,12 @@ class MainActivity : AppCompatActivity() {
         })
         viewModel.forecast.observe(this, Observer { forecast ->
             if (forecast != null) {
-                // Ici il faut transformer forecast.list en List<ForecastItem>
                 val newItems = forecast.list.take(7).mapIndexed { index, day ->
                     val dayName = java.text.SimpleDateFormat("EEE", java.util.Locale.FRENCH).format(java.util.Date(day.dt * 1000)).replaceFirstChar { it.uppercase() }
                     val temp = day.temp.day.toInt()
-                    val iconRes = if ((day.weather.firstOrNull()?.icon ?: "01d").contains("d")) R.drawable.ic_sunny else R.drawable.ic_cloudy
-                    ForecastItem(dayName, temp, iconRes)
+                    val icon = day.weather.firstOrNull()?.icon ?: "01d"
+                    val iconUrl = "https://openweathermap.org/img/wn/${icon}@2x.png"
+                    ForecastItem(dayName, temp, iconUrl)
                 }
                 forecastAdapter.updateData(newItems)
             }

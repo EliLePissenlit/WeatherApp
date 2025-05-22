@@ -30,8 +30,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/ic_sunny"
-            app:tint="@color/blue_200"/>
+            android:src="@drawable/ic_sunny"/>
 
         <TextView
             android:id="@+id/text_temp"

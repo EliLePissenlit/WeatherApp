@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 // Classe de données pour chaque prévision
 data class ForecastItem(
     val day: String,
     val temperature: Int,
-    val weatherIcon: Int
+    val weatherIconUrl: String
 )
 
 class ForecastAdapter(private var items: List<ForecastItem>) : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
@@ -31,7 +32,9 @@ class ForecastAdapter(private var items: List<ForecastItem>) : RecyclerView.Adap
         val forecast = items[position]
         holder.textDay.text = forecast.day
         holder.textTemp.text = "${forecast.temperature}°"
-        holder.imgWeather.setImageResource(forecast.weatherIcon)
+        Glide.with(holder.itemView.context)
+            .load(forecast.weatherIconUrl)
+            .into(holder.imgWeather)
     }
 
     override fun getItemCount() = items.size
